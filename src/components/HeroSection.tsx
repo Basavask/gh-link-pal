@@ -32,14 +32,13 @@ export const HeroSection = () => {
               </div>
               
               <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
-                Transform Your
-                <span className="bg-gradient-primary bg-clip-text text-transparent"> Documents </span>
-                Into Interactive Study Tools
+                <span className="bg-gradient-primary bg-clip-text text-transparent">LearnLift:</span>
+                <span className="block">Elevate Your Learning Experience</span>
               </h1>
               
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Upload any document and instantly get AI-generated notes, flashcards, and personalized quizzes. 
-                Study smarter, not harder with our intelligent tutoring system.
+                Transform any document into AI-powered study materials. Get instant notes, smart flashcards, 
+                and adaptive quizzes that help you learn faster and retain more.
               </p>
             </div>
 

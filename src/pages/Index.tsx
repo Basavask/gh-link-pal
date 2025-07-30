@@ -3,6 +3,10 @@ import { Header } from '@/components/Header';
 import { HeroSection } from '@/components/HeroSection';
 import { DocumentUpload } from '@/components/DocumentUpload';
 import { StudyTools } from '@/components/StudyTools';
+import { HowItWorks } from '@/components/HowItWorks';
+import { Pricing } from '@/components/Pricing';
+import { About } from '@/components/About';
+import { Footer } from '@/components/Footer';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -173,9 +177,9 @@ const Index = () => {
                       <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                     ))}
                   </div>
-                  <p className="text-muted-foreground italic">
-                    "StudyAI helped me improve my grades by 30%. The flashcards are incredibly effective!"
-                  </p>
+                <p className="text-muted-foreground italic">
+                  "LearnLift helped me improve my grades by 30%. The flashcards are incredibly effective!"
+                </p>
                   <p className="font-semibold">Sarah, Computer Science Student</p>
                 </Card>
 
@@ -225,6 +229,15 @@ const Index = () => {
             </div>
           </section>
 
+          {/* How It Works */}
+          <HowItWorks />
+
+          {/* Pricing */}
+          <Pricing />
+
+          {/* About */}
+          <About />
+
           {/* CTA Section */}
           <section className="py-20 bg-gradient-primary text-primary-foreground">
             <div className="container mx-auto px-4 text-center">
@@ -263,6 +276,8 @@ const Index = () => {
           </div>
         </main>
       )}
+      
+      {!showStudyTools && <Footer />}
     </div>
   );
 };

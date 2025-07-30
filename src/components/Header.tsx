@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { GraduationCap, Menu, User, BookOpen, FileText, BrainCircuit } from "lucide-react";
 import { useState } from "react";
+import { ThemeToggle } from "./ThemeToggle";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,7 +16,7 @@ export const Header = () => {
             <BrainCircuit className="h-4 w-4 text-secondary absolute -top-1 -right-1" />
           </div>
           <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            StudyAI
+            LearnLift
           </span>
         </div>
 
@@ -30,10 +31,14 @@ export const Header = () => {
           <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
             Pricing
           </a>
+          <a href="#about" className="text-muted-foreground hover:text-foreground transition-colors">
+            About
+          </a>
         </nav>
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center space-x-4">
+          <ThemeToggle />
           <Button variant="ghost" size="sm">
             <User className="h-4 w-4 mr-2" />
             Sign In
@@ -66,6 +71,9 @@ export const Header = () => {
             </a>
             <a href="#pricing" className="block text-muted-foreground hover:text-foreground transition-colors">
               Pricing
+            </a>
+            <a href="#about" className="block text-muted-foreground hover:text-foreground transition-colors">
+              About
             </a>
             <div className="pt-4 border-t border-border space-y-2">
               <Button variant="ghost" size="sm" className="w-full justify-start">
