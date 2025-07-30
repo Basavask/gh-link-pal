@@ -1,5 +1,8 @@
 import { supabase } from './supabase';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
+
+// Create Auth Context
+const AuthContext = createContext<any>(null);
 
 // Sign in with Google
 export const signInWithGoogle = async () => {
@@ -9,12 +12,15 @@ export const signInWithGoogle = async () => {
       redirectTo: `${window.location.origin}/auth/callback`
     }
   });
-  if (error) console.error('Google sign-in error:', error);
+  if (error) {
+    console.error('Google sign-in error:', error);
+    throw error;
+  }
 };
 
 // Sign up redirect
 export const goToSignUp = () => {
-  window.location.href = '/auth/callback?next=/dashboard'; // This will trigger sign-up flow
+  window.location.href = '/auth/callback?next=/dashboard';
 };
 
 // Auth hook
@@ -24,16 +30,26 @@ export function useAuth() {
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const initializeAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
       setLoading(false);
-    });
+    };
+
+    initializeAuth();
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      async (_event, session) => {
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Redirect based on auth state
+        if (session && window.location.pathname === '/') {
+          window.location.href = '/dashboard';
+        } else if (!session && window.location.pathname === '/dashboard') {
+          window.location.href = '/';
+        }
       }
     );
 
@@ -42,3 +58,23 @@ export function useAuth() {
 
   return { user, loading };
 }
+
+// Auth Provider component
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  
+  return (
+    <AuthContext.Provider value={{ user, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+// Auth context hook
+export const useAuthContext = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuthContext must be used within an AuthProvider');
+  }
+  return context;
+};
