@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { GraduationCap, Menu, User, BookOpen, FileText, BrainCircuit } from "lucide-react";
 import { useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
+import { signInWithGoogle, goToSignUp } from "@/lib/auth";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -39,11 +40,16 @@ export const Header = () => {
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center space-x-4">
           <ThemeToggle />
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" onClick={signInWithGoogle}>
             <User className="h-4 w-4 mr-2" />
             Sign In
           </Button>
-          <Button variant="default" size="sm" className="bg-gradient-primary hover:opacity-90">
+          <Button 
+            variant="default" 
+            size="sm" 
+            className="bg-gradient-primary hover:opacity-90"
+            onClick={goToSignUp}
+          >
             Get Started
           </Button>
         </div>
@@ -76,11 +82,16 @@ export const Header = () => {
               About
             </a>
             <div className="pt-4 border-t border-border space-y-2">
-              <Button variant="ghost" size="sm" className="w-full justify-start">
+              <Button variant="ghost" size="sm" className="w-full justify-start" onClick={signInWithGoogle}>
                 <User className="h-4 w-4 mr-2" />
                 Sign In
               </Button>
-              <Button variant="default" size="sm" className="w-full bg-gradient-primary hover:opacity-90">
+              <Button 
+                variant="default" 
+                size="sm" 
+                className="w-full bg-gradient-primary hover:opacity-90"
+                onClick={goToSignUp}
+              >
                 Get Started
               </Button>
             </div>
