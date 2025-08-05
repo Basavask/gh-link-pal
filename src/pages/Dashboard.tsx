@@ -9,6 +9,12 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'notes' | 'flashcards' | 'quizzes'>('dashboard');
+  
+  // Move all hooks to the top - before any early returns
+  const [processedDocuments, setProcessedDocuments] = useState<any[]>([]);
+  const [currentNotes, setCurrentNotes] = useState<string>("");
+  const [currentFlashcards, setCurrentFlashcards] = useState<any[]>([]);
+  const [currentQuiz, setCurrentQuiz] = useState<any[]>([]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -35,12 +41,6 @@ export default function Dashboard() {
   if (!user) {
     return null;
   }
-
-  // Mock data for processed documents
-  const [processedDocuments, setProcessedDocuments] = useState<any[]>([]);
-  const [currentNotes, setCurrentNotes] = useState<string>("");
-  const [currentFlashcards, setCurrentFlashcards] = useState<any[]>([]);
-  const [currentQuiz, setCurrentQuiz] = useState<any[]>([]);
 
   // Handle document processing completion
   const handleDocumentProcessed = (documentData: any) => {

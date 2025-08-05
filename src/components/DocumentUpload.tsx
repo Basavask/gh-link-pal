@@ -52,6 +52,18 @@ export const DocumentUpload = ({ onDocumentProcessed }: DocumentUploadProps) => 
     });
   }, []);
 
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'application/pdf': ['.pdf'],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+      'text/plain': ['.txt'],
+      'text/csv': ['.csv']
+    },
+    maxSize: 50 * 1024 * 1024, // 50MB
+    multiple: true
+  });
+
   const simulateFileProcessing = async (fileId: string, file: File) => {
     try {
       // Upload simulation
