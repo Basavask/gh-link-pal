@@ -1,0 +1,39 @@
+-- Drop existing tables in the correct order (respecting foreign key constraints)
+DROP TABLE IF EXISTS group_documents CASCADE;
+DROP TABLE IF EXISTS group_members CASCADE;
+DROP TABLE IF EXISTS study_groups CASCADE;
+DROP TABLE IF EXISTS achievements CASCADE;
+DROP TABLE IF EXISTS badges CASCADE;
+DROP TABLE IF EXISTS ai_chats CASCADE;
+DROP TABLE IF EXISTS study_activities CASCADE;
+DROP TABLE IF EXISTS study_sessions CASCADE;
+DROP TABLE IF EXISTS progress CASCADE;
+DROP TABLE IF EXISTS quiz_answers CASCADE;
+DROP TABLE IF EXISTS quiz_attempts CASCADE;
+DROP TABLE IF EXISTS quiz_questions CASCADE;
+DROP TABLE IF EXISTS quizzes CASCADE;
+DROP TABLE IF EXISTS flashcards CASCADE;
+DROP TABLE IF EXISTS notes CASCADE;
+DROP TABLE IF EXISTS document_chunks CASCADE;
+DROP TABLE IF EXISTS documents CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+-- Drop custom types
+DROP TYPE IF EXISTS group_role CASCADE;
+DROP TYPE IF EXISTS achievement_type CASCADE;
+DROP TYPE IF EXISTS badge_type CASCADE;
+DROP TYPE IF EXISTS activity_type CASCADE;
+DROP TYPE IF EXISTS session_type CASCADE;
+DROP TYPE IF EXISTS difficulty_level CASCADE;
+DROP TYPE IF EXISTS processing_status CASCADE;
+DROP TYPE IF EXISTS file_type CASCADE;
+DROP TYPE IF EXISTS user_role CASCADE;
+
+-- Drop functions
+DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;
+DROP FUNCTION IF EXISTS handle_new_user() CASCADE;
+DROP FUNCTION IF EXISTS calculate_retention_rate(UUID, UUID) CASCADE;
+DROP FUNCTION IF EXISTS get_due_flashcards(UUID) CASCADE;
+
+-- Drop triggers
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users CASCADE; 

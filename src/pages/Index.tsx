@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Header } from '@/components/Header';
-import { HeroSection } from '@/components/HeroSection';
+import { Header } from '@/components/layout/Header';
+import { HeroSection } from '@/components/features/HeroSection';
 import { DocumentUpload } from '@/components/DocumentUpload';
 import { StudyTools } from '@/components/StudyTools';
 import { HowItWorks } from '@/components/HowItWorks';
 import { Pricing } from '@/components/Pricing';
 import { About } from '@/components/About';
-import { Footer } from '@/components/Footer';
+import { Footer } from '@/components/layout/Footer';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

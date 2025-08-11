@@ -3,9 +3,27 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/lib/auth';
 import { useToast } from '@/components/ui/use-toast';
 import { DocumentUpload } from '@/components/DocumentUpload';
+import { Header } from '@/components/layout/Header';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { 
+  BookOpen, 
+  Brain, 
+  Target, 
+  Upload,
+  CheckCircle,
+  ArrowRight,
+  Zap,
+  Users,
+  Clock,
+  TrendingUp,
+  Award,
+  Sparkles
+} from "lucide-react";
 
 export default function Dashboard() {
-  const { user, loading } = useAuthContext();
+  const { user, loading, signOut } = useAuthContext();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'notes' | 'flashcards' | 'quizzes'>('dashboard');
@@ -15,6 +33,9 @@ export default function Dashboard() {
   const [currentNotes, setCurrentNotes] = useState<string>("");
   const [currentFlashcards, setCurrentFlashcards] = useState<any[]>([]);
   const [currentQuiz, setCurrentQuiz] = useState<any[]>([]);
+
+  // Debug logging
+  console.log('Dashboard render:', { loading, user: user?.email, userId: user?.id });
 
   useEffect(() => {
     if (!loading && !user) {
@@ -26,6 +47,21 @@ export default function Dashboard() {
       navigate('/', { replace: true });
     }
   }, [user, loading, navigate, toast]);
+
+  // Fallback timeout to prevent infinite loading
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (loading) {
+        console.warn('Dashboard loading timeout - forcing loading to false');
+        // Force reload the page to reset auth state
+        window.location.reload();
+      }
+    }, 15000); // 15 seconds timeout
+
+    return () => clearTimeout(timeout);
+  }, [loading]);
+
+
 
   if (loading) {
     return (
@@ -112,73 +148,129 @@ export default function Dashboard() {
     switch (activeTab) {
       case 'notes':
         return (
-          <div className="space-y-6">
+          <div className="max-w-4xl mx-auto space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Study Notes</h2>
-              <button 
-                onClick={() => setActiveTab('dashboard')}
-                className="text-primary hover:underline"
-              >
-                ← Back to Dashboard
-              </button>
-            </div>
-            <div className="bg-muted/50 p-6 rounded-lg border min-h-96">
-              <h3 className="text-lg font-semibold mb-4">AI-Generated Notes</h3>
-              <div className="prose prose-sm max-w-none">
-                <p>{currentNotes || "No notes available. Process a document to generate study notes."}</p>
+              <div>
+                <h2 className="text-3xl font-bold flex items-center">
+                  <BookOpen className="h-8 w-8 mr-3 text-primary" />
+                  Study Notes
+                </h2>
+                <p className="text-muted-foreground mt-1">AI-generated summaries and key points</p>
               </div>
+              <Button 
+                variant="outline"
+                onClick={() => setActiveTab('dashboard')}
+                className="flex items-center"
+              >
+                <ArrowRight className="h-4 w-4 mr-2 rotate-180" />
+                Back to Dashboard
+              </Button>
             </div>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Sparkles className="h-5 w-5 mr-2 text-primary" />
+                  AI-Generated Summary
+                </CardTitle>
+                <CardDescription>
+                  Key concepts and important points extracted from your document
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="prose prose-sm max-w-none">
+                  {currentNotes ? (
+                    <div className="bg-gradient-to-r from-primary/5 to-secondary/5 p-6 rounded-lg border">
+                      <p className="text-base leading-relaxed">{currentNotes}</p>
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-medium mb-2">No Notes Available</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Process a document to generate AI-powered study notes.
+                      </p>
+                      <Button onClick={() => setActiveTab('dashboard')}>
+                        Upload Document
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         );
       
       case 'flashcards':
         return (
-          <div className="space-y-6">
+          <div className="max-w-4xl mx-auto space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Flashcards</h2>
-              <button 
+              <div>
+                <h2 className="text-3xl font-bold flex items-center">
+                  <Brain className="h-8 w-8 mr-3 text-secondary" />
+                  Smart Flashcards
+                </h2>
+                <p className="text-muted-foreground mt-1">Spaced repetition learning for better retention</p>
+              </div>
+              <Button 
+                variant="outline"
                 onClick={() => setActiveTab('dashboard')}
-                className="text-primary hover:underline"
+                className="flex items-center"
               >
-                ← Back to Dashboard
-              </button>
+                <ArrowRight className="h-4 w-4 mr-2 rotate-180" />
+                Back to Dashboard
+              </Button>
             </div>
-            <div className="grid gap-4">
+            
+            <div className="grid gap-6">
               {currentFlashcards.length > 0 ? (
                 currentFlashcards.map((card, index) => (
-                  <div key={card.id} className="bg-card p-6 rounded-lg border shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-sm text-muted-foreground">Flashcard {index + 1} of {currentFlashcards.length}</span>
-                      <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">AI Generated</span>
-                    </div>
-                    <div className="space-y-4">
-                      <div>
-                        <h4 className="text-sm font-medium text-muted-foreground mb-2">Question</h4>
-                        <p className="text-base">{card.front}</p>
+                  <Card key={card.id} className="hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Badge variant="secondary">Card {index + 1}</Badge>
+                          <Badge variant="outline" className="text-primary border-primary">
+                            <Sparkles className="h-3 w-3 mr-1" />
+                            AI Generated
+                          </Badge>
+                        </div>
+                        <span className="text-sm text-muted-foreground">
+                          {index + 1} of {currentFlashcards.length}
+                        </span>
                       </div>
-                      <div>
-                        <h4 className="text-sm font-medium text-muted-foreground mb-2">Answer</h4>
-                        <p className="text-base">{card.back}</p>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      <div className="bg-gradient-to-r from-secondary/5 to-accent/5 p-4 rounded-lg border">
+                        <h4 className="text-sm font-medium text-muted-foreground mb-2 flex items-center">
+                          <Target className="h-4 w-4 mr-2" />
+                          Question
+                        </h4>
+                        <p className="text-lg font-medium">{card.front}</p>
                       </div>
-                    </div>
-                  </div>
+                      <div className="bg-gradient-to-r from-primary/5 to-secondary/5 p-4 rounded-lg border">
+                        <h4 className="text-sm font-medium text-muted-foreground mb-2 flex items-center">
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Answer
+                        </h4>
+                        <p className="text-lg">{card.back}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))
               ) : (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-medium mb-2">No Flashcards Available</h3>
-                  <p className="text-muted-foreground mb-4">Process a document to generate flashcards for spaced repetition learning.</p>
-                  <button 
-                    onClick={() => setActiveTab('dashboard')}
-                    className="text-primary hover:underline"
-                  >
-                    Go to Dashboard
-                  </button>
-                </div>
+                <Card>
+                  <CardContent className="text-center py-12">
+                    <Brain className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-medium mb-2">No Flashcards Available</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Process a document to generate flashcards for spaced repetition learning.
+                    </p>
+                    <Button onClick={() => setActiveTab('dashboard')}>
+                      Upload Document
+                    </Button>
+                  </CardContent>
+                </Card>
               )}
             </div>
           </div>
@@ -186,56 +278,77 @@ export default function Dashboard() {
       
       case 'quizzes':
         return (
-          <div className="space-y-6">
+          <div className="max-w-4xl mx-auto space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Practice Quiz</h2>
-              <button 
+              <div>
+                <h2 className="text-3xl font-bold flex items-center">
+                  <Target className="h-8 w-8 mr-3 text-accent" />
+                  Practice Quiz
+                </h2>
+                <p className="text-muted-foreground mt-1">Test your knowledge with AI-generated questions</p>
+              </div>
+              <Button 
+                variant="outline"
                 onClick={() => setActiveTab('dashboard')}
-                className="text-primary hover:underline"
+                className="flex items-center"
               >
-                ← Back to Dashboard
-              </button>
+                <ArrowRight className="h-4 w-4 mr-2 rotate-180" />
+                Back to Dashboard
+              </Button>
             </div>
+            
             <div className="grid gap-6">
               {currentQuiz.length > 0 ? (
                 currentQuiz.map((quiz, index) => (
-                  <div key={quiz.id} className="bg-card p-6 rounded-lg border shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-sm text-muted-foreground">Question {index + 1}</span>
-                      <span className="text-xs bg-accent/20 text-accent px-2 py-1 rounded-full">AI Generated</span>
-                    </div>
-                    <h3 className="text-base font-medium mb-4">{quiz.question}</h3>
-                    <div className="space-y-2">
-                      {quiz.options.map((option: string, optIndex: number) => (
-                        <button
-                          key={optIndex}
-                          className="w-full text-left p-3 border rounded-md hover:bg-muted/50 transition-colors"
-                        >
-                          <span className="font-medium mr-2">
-                            {String.fromCharCode(65 + optIndex)}.
-                          </span>
-                          {option}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                  <Card key={quiz.id} className="hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Badge variant="secondary">Question {index + 1}</Badge>
+                          <Badge variant="outline" className="text-accent border-accent">
+                            <Sparkles className="h-3 w-3 mr-1" />
+                            AI Generated
+                          </Badge>
+                        </div>
+                        <span className="text-sm text-muted-foreground">
+                          {index + 1} of {currentQuiz.length}
+                        </span>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <h3 className="text-lg font-medium mb-6">{quiz.question}</h3>
+                      <div className="space-y-3">
+                        {quiz.options.map((option: string, optIndex: number) => (
+                          <Button
+                            key={optIndex}
+                            variant="outline"
+                            className="w-full justify-start h-auto p-4 text-left hover:bg-accent/5 hover:border-accent transition-colors"
+                          >
+                            <div className="flex items-center">
+                              <div className="h-8 w-8 bg-accent/10 rounded-full flex items-center justify-center mr-3 text-accent font-medium">
+                                {String.fromCharCode(65 + optIndex)}
+                              </div>
+                              <span className="text-base">{option}</span>
+                            </div>
+                          </Button>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))
               ) : (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-medium mb-2">No Quiz Available</h3>
-                  <p className="text-muted-foreground mb-4">Process a document to generate a practice quiz to test your knowledge.</p>
-                  <button 
-                    onClick={() => setActiveTab('dashboard')}
-                    className="text-primary hover:underline"
-                  >
-                    Go to Dashboard
-                  </button>
-                </div>
+                <Card>
+                  <CardContent className="text-center py-12">
+                    <Target className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-medium mb-2">No Quiz Available</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Process a document to generate a practice quiz to test your knowledge.
+                    </p>
+                    <Button onClick={() => setActiveTab('dashboard')}>
+                      Upload Document
+                    </Button>
+                  </CardContent>
+                </Card>
               )}
             </div>
           </div>
@@ -243,107 +356,207 @@ export default function Dashboard() {
       
       default:
         return (
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold mb-2">Welcome to Your Dashboard</h1>
-              <p className="text-muted-foreground">
-                Signed in as <span className="font-semibold">{user.email}</span>
-              </p>
+          <div className="max-w-6xl mx-auto">
+            {/* Welcome Header */}
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-between mb-6">
+                <div></div>
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
+                    Welcome to Your Learning Hub
+                  </h1>
+                  <p className="text-lg text-muted-foreground">
+                    Ready to transform your study materials into powerful learning tools
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  onClick={signOut}
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Sign Out
+                </Button>
+              </div>
+              <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
+                <Users className="h-4 w-4" />
+                <span>Signed in as <span className="font-semibold text-primary">{user.email}</span></span>
+              </div>
             </div>
 
-            <DocumentUpload onDocumentProcessed={handleDocumentProcessed} />
+            {/* Quick Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <Card className="text-center hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <BookOpen className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-primary mb-1">{processedDocuments.length}</h3>
+                  <p className="text-sm text-muted-foreground">Documents Processed</p>
+                </CardContent>
+              </Card>
 
-            {/* Recent Documents */}
-            {processedDocuments.length > 0 && (
-              <div className="mt-8">
-                <h2 className="text-xl font-semibold mb-4">Recent Documents</h2>
-                <div className="grid gap-4">
-                  {processedDocuments.map((doc) => (
-                    <div key={doc.id} className="bg-muted/50 p-4 rounded-lg border flex items-center justify-between">
-                      <div>
-                        <h3 className="font-medium">{doc.name}</h3>
-                        <p className="text-sm text-muted-foreground">Processed on {doc.date}</p>
-                      </div>
-                      <div className="flex space-x-2">
-                        <button 
-                          onClick={handleViewNotes}
-                          className="text-sm bg-primary text-primary-foreground px-3 py-1 rounded hover:bg-primary/90 transition-colors"
-                        >
-                          View Notes
-                        </button>
-                        <button 
-                          onClick={handleStudyFlashcards}
-                          className="text-sm bg-secondary text-secondary-foreground px-3 py-1 rounded hover:bg-secondary/90 transition-colors"
-                        >
-                          Study Flashcards
-                        </button>
-                        <button 
-                          onClick={handleTakeQuiz}
-                          className="text-sm bg-accent text-accent-foreground px-3 py-1 rounded hover:bg-accent/90 transition-colors"
-                        >
-                          Take Quiz
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+              <Card className="text-center hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="h-12 w-12 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Brain className="h-6 w-6 text-secondary" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-secondary mb-1">{currentFlashcards.length}</h3>
+                  <p className="text-sm text-muted-foreground">Flashcards Created</p>
+                </CardContent>
+              </Card>
 
-            {/* Study Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-              <div className="bg-muted/50 p-6 rounded-lg border">
-                <h2 className="text-xl font-semibold mb-4">Study Statistics</h2>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Flashcards Created:</span>
-                    <span className="font-medium">{currentFlashcards.length}</span>
+              <Card className="text-center hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="h-12 w-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Target className="h-6 w-6 text-accent" />
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Quizzes Taken:</span>
-                    <span className="font-medium">0</span>
+                  <h3 className="text-2xl font-bold text-accent mb-1">0</h3>
+                  <p className="text-sm text-muted-foreground">Quizzes Completed</p>
+                </CardContent>
+              </Card>
+
+              <Card className="text-center hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="h-12 w-12 bg-study/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Clock className="h-6 w-6 text-study" />
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Study Time:</span>
-                    <span className="font-medium">0 minutes</span>
-                  </div>
-                </div>
+                  <h3 className="text-2xl font-bold text-study mb-1">0m</h3>
+                  <p className="text-sm text-muted-foreground">Study Time</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Main Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Upload Section */}
+              <div className="lg:col-span-2">
+                <Card className="h-full">
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Upload className="h-5 w-5 mr-2 text-primary" />
+                      Upload Study Materials
+                    </CardTitle>
+                    <CardDescription>
+                      Transform your documents into AI-powered study materials
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <DocumentUpload onDocumentProcessed={handleDocumentProcessed} />
+                  </CardContent>
+                </Card>
               </div>
 
               {/* Quick Actions */}
-              <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-6 rounded-lg border border-primary/20">
-                <h2 className="text-xl font-semibold mb-4">Get Started</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <button className="p-4 text-left bg-background rounded-md border hover:shadow-md transition-shadow">
-                    <div className="flex items-center mb-2">
-                      <span className="h-8 w-8 bg-primary rounded-md flex items-center justify-center text-primary-foreground text-sm font-bold">1</span>
-                      <span className="ml-3 font-medium">Upload Document</span>
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Zap className="h-5 w-5 mr-2 text-secondary" />
+                      Quick Actions
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start h-auto p-4"
+                      onClick={handleViewNotes}
+                    >
+                      <div className="flex items-center">
+                        <div className="h-8 w-8 bg-primary/10 rounded-lg flex items-center justify-center mr-3">
+                          <BookOpen className="h-4 w-4 text-primary" />
+                        </div>
+                        <div className="text-left">
+                          <div className="font-medium">View Notes</div>
+                          <div className="text-xs text-muted-foreground">Review AI-generated summaries</div>
+                        </div>
+                      </div>
+                    </Button>
+
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start h-auto p-4"
+                      onClick={handleStudyFlashcards}
+                    >
+                      <div className="flex items-center">
+                        <div className="h-8 w-8 bg-secondary/10 rounded-lg flex items-center justify-center mr-3">
+                          <Brain className="h-4 w-4 text-secondary" />
+                        </div>
+                        <div className="text-left">
+                          <div className="font-medium">Study Flashcards</div>
+                          <div className="text-xs text-muted-foreground">Spaced repetition learning</div>
+                        </div>
+                      </div>
+                    </Button>
+
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start h-auto p-4"
+                      onClick={handleTakeQuiz}
+                    >
+                      <div className="flex items-center">
+                        <div className="h-8 w-8 bg-accent/10 rounded-lg flex items-center justify-center mr-3">
+                          <Target className="h-4 w-4 text-accent" />
+                        </div>
+                        <div className="text-left">
+                          <div className="font-medium">Take Quiz</div>
+                          <div className="text-xs text-muted-foreground">Test your knowledge</div>
+                        </div>
+                      </div>
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Recent Activity */}
+                {processedDocuments.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center">
+                        <TrendingUp className="h-5 w-5 mr-2 text-accent" />
+                        Recent Activity
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {processedDocuments.slice(0, 3).map((doc) => (
+                        <div key={doc.id} className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
+                          <div className="h-8 w-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                            <BookOpen className="h-4 w-4 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{doc.name}</p>
+                            <p className="text-xs text-muted-foreground">{doc.date}</p>
+                          </div>
+                          <Badge variant="secondary" className="text-xs">
+                            Processed
+                          </Badge>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Tips Card */}
+                <Card className="bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/20">
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Sparkles className="h-5 w-5 mr-2 text-primary" />
+                      Pro Tips
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2 text-sm">
+                    <div className="flex items-start space-x-2">
+                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <p>Upload PDFs for best AI processing results</p>
                     </div>
-                    <p className="text-sm text-muted-foreground">PDF, DOCX, TXT, or CSV files supported</p>
-                  </button>
-                  
-                  <button 
-                    onClick={handleViewNotes}
-                    className="p-4 text-left bg-background rounded-md border hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex items-center mb-2">
-                      <span className="h-8 w-8 bg-secondary rounded-md flex items-center justify-center text-secondary-foreground text-sm font-bold">2</span>
-                      <span className="ml-3 font-medium">View Notes</span>
+                    <div className="flex items-start space-x-2">
+                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <p>Review flashcards regularly for better retention</p>
                     </div>
-                    <p className="text-sm text-muted-foreground">Review AI-generated study notes</p>
-                  </button>
-                  
-                  <button 
-                    onClick={handleStudyFlashcards}
-                    className="p-4 text-left bg-background rounded-md border hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex items-center mb-2">
-                      <span className="h-8 w-8 bg-accent rounded-md flex items-center justify-center text-accent-foreground text-sm font-bold">3</span>
-                      <span className="ml-3 font-medium">Study Flashcards</span>
+                    <div className="flex items-start space-x-2">
+                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <p>Take quizzes to identify knowledge gaps</p>
                     </div>
-                    <p className="text-sm text-muted-foreground">Use spaced repetition to master content</p>
-                  </button>
-                </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>
@@ -353,6 +566,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Header />
       <div className="container mx-auto px-4 py-8">
         {renderContent()}
       </div>
